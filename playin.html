@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playin</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    iframe {
+      width: 700px;
+      height: 700px;
+      border: none;
+      margin: 20px auto;
+    }
+    /* Add this media query to target smaller screen sizes */
+    @media only screen and (max-width: 768px) {
+      iframe {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="game-iframe" src="" frameborder="0"></iframe>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const link = urlParams.get('link');
+
+    if (link) {
+      document.getElementById('game-iframe').src = link;
+    }
+  </script>
+</body>
+</html>

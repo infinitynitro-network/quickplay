@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <title>Scrolling UID System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #0e0e0e;
+            padding: 0;
+            color: rgb(255, 255, 255);
+            overflow: hidden; /* Prevent body scrollbars */
+        }
+        #uidContainer {
+            height: 100vh; /* Full viewport height */
+            overflow-y: scroll; /* Enable vertical scrolling */
+            padding: 25px; /* Add some padding to prevent text from touching the edges */
+            box-sizing: border-box; /* Include padding in the height calculation */
+            scroll-behavior: smooth; /* Smooth scrolling for better experience */
+        }
+        .uid-item {
+            font-size: 13px;
+            color: #2bff00;
+            display: flex; /* Use flexbox to position elements */
+            align-items: center; /* Center items vertically */
+            margin-bottom: 5px; /* Space between lines */
+            white-space: nowrap; 
+            font-family: "Russo One", sans-serif;
+                font-weight: -100;
+                font-style: normal;
+              }
+              
+        .uid-prefix {
+            flex-shrink: 0; /* Prevent shrinking */
+            width: 120px; /* Fixed width for the prefix text */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+            white-space: nowrap; /* Prevent line breaks */
+             /* Optional: background for better visibility */
+        }
+        .uid-text {
+            flex-grow: 1; /* Allow UID text to take remaining space */
+            overflow: hidden; /* Hide overflowed text */
+            text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+            white-space: nowrap; /* Prevent line breaks */
+        }
+        .button-container {
+            opacity: 0%;
+        
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8); /* Optional: background for better visibility */
+            padding: 5px; /* Optional: padding around buttons */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+        .button-container button {
+            opacity: 0%;
+            margin-right: 10px;
+            padding: 5px 10px; /* Add padding to buttons */
+            border: none; /* Remove default button border */
+            border-radius: 3px; /* Rounded corners for buttons */
+            background-color: #007BFF; /* Blue background color */
+            color: white; /* White text color */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+        .button-container button:hover {
+            opacity: 0%;
+
+             
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+<div id="uidContainer"></div>
+
+<div class="button-container">
+    <button onclick="startGenerating()">Start</button>
+    <button onclick="stopGenerating()">Stop</button>
+</div>
+
+<script>
+    var isGenerating = false;
+    var intervalId;
+
+    // Function to generate a random UID
+    function generateRandomUID() {
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var length = 30;
+        var uid = '';
+        for (var i = 0; i < length; i++) {
+            var randomIndex = Math.floor(Math.random() * characters.length);
+            uid += characters.charAt(randomIndex);
+        }
+        return uid;
+    }
+
+    // Function to start generating and scrolling
+    function startGenerating() {
+        if (!isGenerating) {
+            intervalId = setInterval(function() {
+                var uidContainer = document.getElementById('uidContainer');
+                var uid = generateRandomUID();
+                // Create a new div for the UID with fixed prefix text
+                var uidItem = document.createElement('div');
+                uidItem.className = 'uid-item';
+                
+                var uidPrefix = document.createElement('div');
+                uidPrefix.className = 'uid-prefix';
+                uidPrefix.textContent = 'BTC Finding.. ';
+                
+                var uidText = document.createElement('div');
+                uidText.className = 'uid-text';
+                uidText.textContent = uid;
+                
+                uidItem.appendChild(uidPrefix);
+                uidItem.appendChild(uidText);
+                
+                uidContainer.appendChild(uidItem);
+                uidContainer.scrollTop = uidContainer.scrollHeight; // Scroll to bottom
+            }, 100); // Increase the frequency of UID generation
+            isGenerating = true;
+        }
+    }
+
+    // Function to stop generating and scrolling
+    function stopGenerating() {
+        clearInterval(intervalId);
+        isGenerating = false;
+    }
+</script>
+</body>
+</html>
+ 
