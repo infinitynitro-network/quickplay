@@ -1,140 +1,534 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-    <title>Scrolling UID System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #0e0e0e;
-            padding: 0;
-            color: rgb(255, 255, 255);
-            overflow: hidden; /* Prevent body scrollbars */
-        }
-        #uidContainer {
-            height: 100vh; /* Full viewport height */
-            overflow-y: scroll; /* Enable vertical scrolling */
-            padding: 25px; /* Add some padding to prevent text from touching the edges */
-            box-sizing: border-box; /* Include padding in the height calculation */
-            scroll-behavior: smooth; /* Smooth scrolling for better experience */
-        }
-        .uid-item {
-            font-size: 13px;
-            color: #2bff00;
-            display: flex; /* Use flexbox to position elements */
-            align-items: center; /* Center items vertically */
-            margin-bottom: 5px; /* Space between lines */
-            white-space: nowrap; 
-            font-family: "Russo One", sans-serif;
-                font-weight: -100;
-                font-style: normal;
-              }
-              
-        .uid-prefix {
-            flex-shrink: 0; /* Prevent shrinking */
-            width: 120px; /* Fixed width for the prefix text */
-            overflow: hidden; /* Hide overflow text */
-            text-overflow: ellipsis; /* Add ellipsis for overflowed text */
-            white-space: nowrap; /* Prevent line breaks */
-             /* Optional: background for better visibility */
-        }
-        .uid-text {
-            flex-grow: 1; /* Allow UID text to take remaining space */
-            overflow: hidden; /* Hide overflowed text */
-            text-overflow: ellipsis; /* Add ellipsis for overflowed text */
-            white-space: nowrap; /* Prevent line breaks */
-        }
-        .button-container {
-            opacity: 0%;
-        
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.8); /* Optional: background for better visibility */
-            padding: 5px; /* Optional: padding around buttons */
-            border-radius: 5px; /* Optional: rounded corners */
-        }
-        .button-container button {
-            opacity: 0%;
-            margin-right: 10px;
-            padding: 5px 10px; /* Add padding to buttons */
-            border: none; /* Remove default button border */
-            border-radius: 3px; /* Rounded corners for buttons */
-            background-color: #007BFF; /* Blue background color */
-            color: white; /* White text color */
-            cursor: pointer; /* Change cursor to pointer */
-        }
-        .button-container button:hover {
-            opacity: 0%;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Play</title>
+  <style>
+    body {
+      background-color: #1b1b1b;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
 
-             
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-    </style>
+    /* Top navigation bar styles */
+    .top-bar {
+      width: 100%;
+      height: 35px;
+      background-color: #282828;
+      display: flex;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      background-color: #000000;
+      z-index: 1000;
+    }
+
+    .top-bar h1 {
+      margin: 0;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .top-bar a {
+      color: #fff;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .top-bar a:hover {
+      background-color: #3a3a3a;
+      border-radius: 5px;
+    }
+
+    /* Sidebar menu styles */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100%;
+      background-color: #282828;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: #3a3a3a;
+      border-radius: 5px;
+    }
+
+    .sidebar-close {
+      align-self: flex-end;
+      cursor: pointer;
+      color: #fff;
+      font-size: 24px;
+    }
+    
+    .container {
+      margin-left: 20px;
+        display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      align-items: flex-start;
+      overflow-x: auto; /* Enable horizontal scrolling */
+      white-space: nowrap; /* Prevent wrapping of child elements */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer and Edge */
+    }
+    
+
+    .container2 {
+      
+      
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 70px;
+        box-sizing: border-box;
+        align-items: flex-start;
+      }
+
+    
+    h1 {
+      font-size: 20px;
+    
+      text-align: center;
+    }
+
+    .game-list {
+      margin-left: 20px;
+      overflow-x: auto;
+      padding: 10px ;
+      white-space: nowrap;
+    }
+
+    .game-item {
+      width: 100px;
+      height: 100px;
+      background-color: #282828;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .game-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .game-item:hover {
+      transform: scale(1.1);
+    }
+
+
+    .container {
+      width: 100%;
+    
+      margin: 0 auto;
+      padding:px;
+      box-sizing: border-box;
+    }
+    
+    .game-list {
+      display: flex;
+      overflow-x: auto; /* Enable horizontal scrolling */
+      gap: 10px;
+      padding: 10px 0;
+      white-space: nowrap; /* Prevent wrapping of child elements */
+    }
+    
+   /* Ensure container is full-screen */
+  
+
+  /* Center slideshow horizontally */
+  .slideshow-container7 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden; /* Hide overflow to prevent scrollbars */
+  }
+
+  /* Individual slide */
+  .slide {
+    display: none;
+    width: 100%;
+    max-width: 800px; /* Adjust as needed */
+    text-align: center; /* Center content horizontally */
+  }
+
+  .slide img {
+    max-width: 70%; /* Limit image width */
+    height: auto;
+    border-radius: 30px; /* Rounded corners */
+    display: block; /* Ensure image is block-level */
+    margin: 0 auto; /* Center image horizontally */
+  }
+
+  /* Show first slide by default */
+  .slide:first-child {
+    display: block;}
+
+    .game-title {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      color: #fff;
+      font-size: 1px;
+      text-align: left;
+      width: calc(100% - 10px);
+    }
+
+    .game-list:not(:last-of-type) {
+      margin-bottom: 10px;
+    }
+
+    /* Media query for mobile view */
+    @media (max-width: 768px) {
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+      }
+
+      .top-bar h1 {
+        cursor: pointer;
+        font-size: 20px;
+        color: #ffffff;
+      }
+
+      .top-bar .menu-list {
+        display: none;
+      }
+
+      .sidebar {
+        display: flex;
+      }
+
+      .sidebar-close {
+        display: block;
+      }
+    }
+    .class1{
+margin-left: 20px;
+    }
+    .heado {
+      padding: 0;
+      margin-bottom: 0;
+    }
+
+    /* Custom styles for Quick Play */
+    .quick-play {
+      display: flex;
+      align-items: center;
+    }
+
+    .quick-play .quick {
+      color: #ffffff; /* Tomato color for "Quick" */
+    }
+
+    .quick-play .play {
+      color: #00ffaa; /* DodgerBlue color for "Play" */
+    }
+  </style>
 </head>
 <body>
-<div id="uidContainer"></div>
+  <!-- Top Navigation Bar -->
+  <div class="top-bar">
+    <div class="heado">
+      <h1 class="quick-play" id="quick-play-btn"><span class="quick">Quick</span> <span class="play">Play</span></h1>
+    </div>
+    <div class="menu-list">
+      <a href="#">Home</a>
+      <a href="#">Games</a>
+      <a href="#">Leaderboard</a>
+      <a href="#">Settings</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
 
-<div class="button-container">
-    <button onclick="startGenerating()">Start</button>
-    <button onclick="stopGenerating()">Stop</button>
+  <!-- Sidebar Menu -->
+ 
+
+<div class="container2">
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-close" id="sidebar-close">&times;</div>
+    <h1 class="quick-play"><span class="quick">Quick</span> <span class="play">Play</span></h1>
+    <a href="#">Home</a>
+    <a href="#">Games</a>
+    <a href="#">Leaderboard</a>
+    <a href="#">Settings</a>
+    <a href="#">Contact</a>
+  </div>
+  <h1 class="class1">Latest Games</h1>
+  <div class="container">
+   
+    <div class="game-list" >
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/cannon-balls-3d/A1000-10">
+        <img src="https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=204,height=204,fit=cover,f=auto/28b1a724027f7fd76a8fcced2c89a51e.png" alt="Diamond Rush">
+        <div class="game-title">DIAMOND RUSH</div>
+
+
+        <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/cannon-balls-3d/A1000-10">
+          <img src="https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=204,height=204,fit=cover,f=auto/e8a5f2eda2e5340e8ded263692835caa.png" alt="Diamond Rush">
+          <div class="game-title">DIAMOND RUSH</div>
+
+          
+        <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+        </a>
+      <a href="#" class="game-item" data-link="https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftA9HM&pcampaignid=web_share">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://shorturl.at/By5nK">
+        <img src="https://www.gamesmv.com/images/google/com.ubisoft.hungrysharkworld/44a82660-14c8-11ef-bb2d-09eaf7cac553.jpg" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://poki.com/en/g/call-of-tanks">
+        <img src="https://img.poki-cdn.com/cdn-cgi/image/quality=78,width=94,height=94,fit=cover,f=auto/d286c8607bde94ca319d790951fc2720.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://example.com/neon-rider">
+        <img src="https://i.ibb.co/3m1jX7Q/neon-rider.png" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+     
+    </div>
+  </div>
+  <h1 class="class1">Downloadable Games</h1>
+
+  <div class="container7">
+    
+    <div class="slideshow-container">
+      <div class="slide">
+        <img src="https://play-lh.googleusercontent.com/DD1tyELCWYtgVHyLAXUSBapnuYXTQZTqD5cxlcyvSufEP7E9TtoZqjChE02xpmk0OQ=w416-h235-rw" alt="Slide 1">
+      </div>
+      <div class="slide">
+        <img src="https://play-lh.googleusercontent.com/UAl0bVTGYqm007nKd2QXRnuDgC0EkkhlIX4WqdS7R2xbFozAJMsZ7xkFw324-5gGZQ=w416-h235-rw" alt="Slide 2">
+      </div>
+      <div class="slide" href="https://games.crazygames.com/en_US/bodycamera-shooter/index.html?">
+        <img src="https://images.crazygames.com/bodycamera-shooter_16x9/20240724103721/bodycamera-shooter_16x9-cover?auto=format%2Ccompress&q=75&cs=strip&ch=DPR&w=461" alt="Slide 3">
+      </div>
+      <div class="slide">
+        <img src=" https://images.crazygames.com/rally-racer-dirt_16x9/20240514035838/rally-racer-dirt_16x9-cover?auto=format%2Ccompress&q=75&cs=strip&ch=DPR&w=461" alt="Slide 3">
+      </div>
+     
+      <!-- Add more slides as needed -->
+    </div>
+    
+  </div>
+
+  <h1 class="class1">Latest Games</h1>
+  <div class="container">
+   
+    <div class="game-list">
+      <a href="#" class="game-item" data-link="https://play.famobi.com/archery-world-tour">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/ArcheryWorldTourTeaser.jpg?v=0.2-c60c58de" alt="Diamond Rush">
+        <div class="game-title">DIAMOND RUSH</div>
+
+
+        <a href="#" class="game-item" data-link="https://html5games.com/wrapper/Toilet-Run/A1000-10">
+          <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/Toilet_RunTeaser.jpg?v=0.2-c60c58de" alt="Diamond Rush">
+          <div class="game-title">DIAMOND RUSH</div>
+
+          
+        <a href="#" class="game-item" data-link="https://html5games.com/wrapper/Bottle-Flip/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/BottleFlipTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+        </a>
+      <a href="#" class="game-item" data-link="https://html5games.com/wrapper/Parking-Panic/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/ParkingPanicTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/crazy-hen-level/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/CrazyHenLevelTeaser.jpg" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/tower-smash/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/TowerSmashTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/om-nom-run/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/OmNomRunTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/truck-trials/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/TruckTrialsTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/orange-ranch/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/OrangeRanchTeaser.jpg?v=0.2-c60c58de" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/world-cup-penalty/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/WorldCupPenaltyTeaser.jpg" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+      <a href="#" class="game-item" data-link="https://play.famobi.com/wrapper/jewel-bubbles-3/A1000-10">
+        <img src="https://img.cdn.famobi.com/portal/html5games/images/tmp/JewelBubbles3Teaser.jpg" alt="Neon Rider">
+        <div class="game-title">NEON RIDER</div>
+      </a>
+    </div>
+  </div>
 </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const sidebar = document.getElementById('sidebar');
+      const sidebarClose = document.getElementById('sidebar-close');
+      const quickPlayBtn = document.getElementById('quick-play-btn');
 
-<script>
-    var isGenerating = false;
-    var intervalId;
+      // Show sidebar menu
+      quickPlayBtn.addEventListener('click', function () {
+        sidebar.classList.add('active');
+      });
 
-    // Function to generate a random UID
-    function generateRandomUID() {
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var length = 30;
-        var uid = '';
-        for (var i = 0; i < length; i++) {
-            var randomIndex = Math.floor(Math.random() * characters.length);
-            uid += characters.charAt(randomIndex);
+      // Hide sidebar menu
+      sidebarClose.addEventListener('click', function () {
+        sidebar.classList.remove('active');
+      });
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const gameItems = document.querySelectorAll('.game-item');
+  
+      gameItems.forEach((gameItem) => {
+        gameItem.addEventListener('click', function (e) {
+          e.preventDefault();
+          const link = gameItem.getAttribute('data-link');
+          window.open('playin.html?link=' + link, '_blank');
+        });
+      });
+    });
+
+    let touchstartX = 0;
+      let touchendX = 0;
+      const slideshow = document.querySelector('.slideshow-container');
+
+      slideshow.addEventListener('touchstart', function (event) {
+        touchstartX = event.changedTouches[0].screenX;
+      }, false);
+
+      slideshow.addEventListener('touchend', function (event) {
+        touchendX = event.changedTouches[0].screenX;
+        handleGesture();
+      }, false);
+
+      function handleGesture() {
+        if (touchendX < touchstartX) {
+          // Swiped left
+          showNextSlide();
+        } else if (touchendX > touchstartX) {
+          // Swiped right
+          showPreviousSlide();
         }
-        return uid;
-    }
+      }
 
-    // Function to start generating and scrolling
-    function startGenerating() {
-        if (!isGenerating) {
-            intervalId = setInterval(function() {
-                var uidContainer = document.getElementById('uidContainer');
-                var uid = generateRandomUID();
-                // Create a new div for the UID with fixed prefix text
-                var uidItem = document.createElement('div');
-                uidItem.className = 'uid-item';
-                
-                var uidPrefix = document.createElement('div');
-                uidPrefix.className = 'uid-prefix';
-                uidPrefix.textContent = 'BTC Finding.. ';
-                
-                var uidText = document.createElement('div');
-                uidText.className = 'uid-text';
-                uidText.textContent = uid;
-                
-                uidItem.appendChild(uidPrefix);
-                uidItem.appendChild(uidText);
-                
-                uidContainer.appendChild(uidItem);
-                uidContainer.scrollTop = uidContainer.scrollHeight; // Scroll to bottom
-            }, 100); // Increase the frequency of UID generation
-            isGenerating = true;
+      function showNextSlide() {
+        const currentSlide = document.querySelector('.slide:not([style*="display: none"])');
+        let nextSlide = currentSlide.nextElementSibling;
+
+        if (!nextSlide) {
+          nextSlide = document.querySelector('.slide:first-child');
         }
-    }
 
-    // Function to stop generating and scrolling
-    function stopGenerating() {
-        clearInterval(intervalId);
-        isGenerating = false;
-    }
-</script>
+        currentSlide.style.display = 'none';
+        nextSlide.style.display = 'flex';
+      }
+
+      function showPreviousSlide() {
+        const currentSlide = document.querySelector('.slide:not([style*="display: none"])');
+        let previousSlide = currentSlide.previousElementSibling;
+
+        if (!previousSlide) {
+          previousSlide = document.querySelector('.slide:last-child');
+        }
+
+        currentSlide.style.display = 'none';
+        previousSlide.style.display = 'flex';
+      }
+    
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const gameLists = document.querySelectorAll('.game-list');
+      const slideshowList = document.querySelector('.slideshow-container');
+  
+      // Function to shuffle an array
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+  
+      // Shuffle and render game items
+      function shuffleAndRenderGames() {
+        gameLists.forEach(gameList => {
+          const gameItems = Array.from(gameList.children);
+          const shuffledGameItems = shuffleArray(gameItems);
+  
+          // Empty current list
+          gameList.innerHTML = '';
+  
+          // Append shuffled items back to the list
+          shuffledGameItems.forEach(gameItem => gameList.appendChild(gameItem));
+        });
+      }
+  
+      // Call shuffle function initially and set interval to shuffle every 10 seconds
+      shuffleAndRenderGames();
+      setInterval(shuffleAndRenderGames, 10000); // 10 seconds (adjust interval as needed)
+    });
+    
+    
+  </script>
 </body>
 </html>
- 
